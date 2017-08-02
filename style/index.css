@@ -1,0 +1,9 @@
+/*-----------------------------------------------------------------------------
+| Copyright (c) Philippe Entzmann
+| Distributed under the terms of the Modified BSD License.
+|----------------------------------------------------------------------------*/
+
+.jp-graphviz {
+    margin: 10px;
+    overflow-y: auto;
+}
