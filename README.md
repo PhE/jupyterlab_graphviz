@@ -35,3 +35,9 @@ npm run build
 jupyter lab build
 ```
 
+## TODO
+
+* support neato engine rendering with a specific MIME type
+* add tests
+* allow zooming in/out
+

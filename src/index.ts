@@ -22,6 +22,11 @@ const TYPES: {[key: string]: {name: string, extensions: string[], engine: any}} 
     name: 'dot',
     extensions: ['.gv', '.dot'],
     engine: 'dot'
+  },
+  'application/vnd.graphviz.neato': {
+    name: 'neato',
+    extensions: ['.neato'],
+    engine: 'neato'
   }
 };
 
@@ -55,7 +60,7 @@ class RenderedData extends Widget implements IRenderMime.IRenderer {
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
     let data = model.data[this._mimeType];
     //this._resetWidth();
-    this.viz = Viz(data);
+    this.viz = Viz(data, { engine: this._engine });
     //result = Viz("graph { n0 -- n1 -- n2 -- n3 -- n0; }", { engine: "neato" });
     this.div.innerHTML = this.viz;
     return Promise.resolve();
