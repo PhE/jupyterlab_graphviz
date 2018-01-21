@@ -2,7 +2,6 @@
 | Copyright (c) Philippe Entzmann
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
-
 import {
   IRenderMime
 } from '@jupyterlab/rendermime-interfaces';
@@ -14,7 +13,7 @@ import {
 import * as Viz from "viz.js";
 
 //TODO: fix the tsc path error
-//import "../style/index.css";
+import "../style/index.css";
 
 // cf https://www.iana.org/assignments/media-types/text/vnd.graphviz
 const TYPES: {[key: string]: {name: string, extensions: string[], engine: any}} = {
@@ -85,6 +84,7 @@ const rendererFactory: IRenderMime.IRendererFactory = {
 const extensions = Object.keys(TYPES).map(k => {
   const name = TYPES[k].name;
   return {
+    id: `jupyterlab.graphviz.${name}`,
     name,
     rendererFactory,
     rank: 0,
