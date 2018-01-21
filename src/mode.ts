@@ -44,7 +44,8 @@ export function defineGraphvizMode() {
   for(let t in TYPES) {
     CodeMirror.defineMIME(t, MODE_NAME);
     CodeMirror.modeInfo.push({
-      ext: TYPES[t].extensions,
+      // codemirror extensions don't expect the leading dot
+      ext: TYPES[t].extensions.map((e) => e.replace(/^./, '')),
       mime: t,
       mode: MODE_NAME,
       name: `${MODE_NAME} (${TYPES[t].name})`,
