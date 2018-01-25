@@ -2,18 +2,17 @@
   "author": "Philippe ENTZMANN",
   "description": "A JupyterLab extension for viewing graphviz files.",
   "dependencies": {
-    "@jupyterlab/application": "^0.9.0",
-    "@jupyterlab/rendermime-interfaces": "^0.3.0",
+    "@jupyterlab/application": "^0.15.1",
+    "@jupyterlab/rendermime-interfaces": "^1.0.3",
     "@phosphor/widgets": "^1.5.0",
     "viz.js": "^1.8.0"
   },
   "devDependencies": {
-    "rimraf": "^2.6.1",
-    "typescript": "~2.4.0"
+    "rimraf": "^2.6.2",
+    "typescript": "~2.6.2"
   },
   "files": [
-    "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
-    "style/*.{gif,html,jpg,json,png,svg,woff2,ttf}"
+    "{lib,style}/**/*.{css,d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}"
   ],
   "jupyterlab": {
     "mimeExtension": true
@@ -31,8 +30,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "clean": "rimraf lib",
-    "prepublish": "npm run build"
+    "clean": "rimraf lib"
   },
   "version": "0.1.1"
 }
