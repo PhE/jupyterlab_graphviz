@@ -12,22 +12,13 @@ import {
 
 import * as Viz from "viz.js";
 
+import {TYPES} from "./constants";
+import {defineGraphvizMode} from "./mode";
+
 //TODO: fix the tsc path error
 import "../style/index.css";
 
-// cf https://www.iana.org/assignments/media-types/text/vnd.graphviz
-const TYPES: {[key: string]: {name: string, extensions: string[], engine: any}} = {
-  'application/vnd.graphviz': {
-    name: 'dot',
-    extensions: ['.gv', '.dot'],
-    engine: 'dot'
-  },
-  'application/vnd.graphviz.neato': {
-    name: 'neato',
-    extensions: ['.neato'],
-    engine: 'neato'
-  }
-};
+defineGraphvizMode();
 
 /**
  * A widget for rendering data, for usage with rendermime.
