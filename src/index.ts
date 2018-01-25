@@ -11,6 +11,7 @@ import {
 } from '@phosphor/widgets';
 
 import * as Viz from "viz.js";
+import * as d3 from "d3";
 
 //TODO: fix the tsc path error
 import "../style/index.css";
@@ -41,16 +42,21 @@ class RenderedData extends Widget implements IRenderMime.IRenderer {
     super();
     this._mimeType = options.mimeType;
     this._engine = TYPES[this._mimeType].engine;
+
     this.addClass('jp-graphviz');
-    this.div = document.createElement('div');
-    //(<any>window).Viz = Viz;
+
+    this.div = document.createElement('div')
+    this.div.className = 'jp-graphviz-wrapper';
 
     this.viz = Viz(`digraph { "loading ..."; }`);
     this.div.innerHTML = this.viz;
-    //console.log(this.viz);
-
 
     this.node.appendChild(this.div);
+
+    this._zoom = d3.behavior.zoom()
+      .on('zoom', () => this.onZoom());
+
+    this._zoom(d3.select(this.div));
   }
 
   /**
@@ -58,17 +64,50 @@ class RenderedData extends Widget implements IRenderMime.IRenderer {
    */
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
     let data = model.data[this._mimeType];
-    //this._resetWidth();
-    this.viz = Viz(data, { engine: this._engine });
-    //result = Viz("graph { n0 -- n1 -- n2 -- n3 -- n0; }", { engine: "neato" });
+
+    try {
+      this.viz = Viz(data, { engine: this._engine });
+    } catch(err) {
+      console.groupCollapsed("graphviz error");
+      console.error(err);
+      console.groupEnd();
+    }
+
     this.div.innerHTML = this.viz;
+    this.zoom();
+
     return Promise.resolve();
   }
 
+  zoom() {
+    const div = d3.select(this.div);
+    const svg = div.select("svg");
+
+    // right now only using the height, because svg
+    const size = [svg.attr("width"), svg.attr("height")].map(parseFloat);
+    const tx = this._zoom.translate() || [0, 0];
+
+    // clear out the fixed values
+    svg.attr({width: null, height: null, viewBox: null});
+
+    // re-initialize zoom settings
+    this._zoom
+      .translate((tx[0] || tx[1]) ? tx : [0, size[1]])
+      .event(div);
+  }
+
+  onZoom() {
+    const evt = d3.event as d3.ZoomEvent;
+    d3.select(this.div)
+      .select("svg g")
+      .attr("transform", `translate(${evt.translate}) scale(${evt.scale})`);
+  }
+
   viz: any;
-  div: any;
+  div: HTMLDivElement;
   private _mimeType: string;
   private _engine: any;
+  private _zoom: d3.behavior.Zoom<any>;
 }
 
 /**

@@ -4,6 +4,16 @@
 |----------------------------------------------------------------------------*/
 
 .jp-graphviz {
-    margin: 10px;
-    overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.jp-graphviz .jp-graphviz-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.jp-graphviz svg {
+  flex: 1;
 }
