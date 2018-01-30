@@ -11,3 +11,8 @@ export const TYPES: {[key: string]: {name: string, extensions: string[], engine:
     engine: 'neato'
   }
 };
+
+
+export const GRAPHVIZ_CLASS = 'jp-graphviz';
+export const GRAPHVIZ_TOOLS_CLASS = 'jp-graphviz-tools';
+export const GRAPHVIZ_GRAPH_CLASS = 'jp-graphviz-graph';

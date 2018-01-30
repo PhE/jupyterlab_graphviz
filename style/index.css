@@ -3,17 +3,61 @@
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
 
+/* the widget */
 .jp-graphviz {
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
-.jp-graphviz .jp-graphviz-wrapper {
-  display: flex;
+/* the graph */
+.jp-graphviz-graph {
+  flex: 1;
   flex-direction: column;
-  flex: 1;
+  display: flex;
 }
 
-.jp-graphviz svg {
+.jp-graphviz-graph svg {
   flex: 1;
+  min-width: 100%;
+  min-height: 100%;
+  width: 100%;
+  height: 100%;
+}
+
+/* toolbar */
+.jp-graphviz-tools {
+  position: absolute;
+  opacity: 0.0;
+  top: -24px;
+  right: 0;
+  left: 0;
+  color: var(--jp-ui-font-color1);
+  background-color: var(--jp-layout-color2);
+  transition-duration: 0.2s;
+  transition-property: opacity bottom;
+  width: auto;
+  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.jp-graphviz-tools label {
+  display: flex;
+  align-items: center;
+}
+
+.jp-graphviz:hover .jp-graphviz-tools {
+  opacity: 0.1;
+  transition-duration: 0.2s;
+  transition-property: opacity top;
+  top: 0;
+  font-size: var(--jp-ui-font-size0);
+}
+
+.jp-graphviz-tools:hover {
+  opacity: 0.9;
+  transition-duration: 0.2s;
+  transition-property: opacity;
 }

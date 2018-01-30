@@ -10,10 +10,14 @@ import {
   Widget
 } from '@phosphor/widgets';
 
+import {
+  Message
+} from '@phosphor/messaging';
+
 import * as Viz from "viz.js";
 import * as d3 from "d3";
 
-import {TYPES} from "./constants";
+import * as C from "./constants";
 import {defineGraphvizMode} from "./mode";
 
 //TODO: fix the tsc path error
@@ -32,73 +36,271 @@ class RenderedData extends Widget implements IRenderMime.IRenderer {
   constructor(options: IRenderMime.IRendererOptions) {
     super();
     this._mimeType = options.mimeType;
-    this._engine = TYPES[this._mimeType].engine;
+    this._engine = C.TYPES[this._mimeType].engine;
 
-    this.addClass('jp-graphviz');
+    const root = d3.select(this.node)
+      .classed(C.GRAPHVIZ_CLASS, true);
 
-    this.div = document.createElement('div')
-    this.div.className = 'jp-graphviz-wrapper';
+    this._div = root.append("div")
+      .classed(C.GRAPHVIZ_GRAPH_CLASS, true);
 
-    this.viz = Viz(`digraph { "loading ..."; }`);
-    this.div.innerHTML = this.viz;
+    const toolbar = root.append("div")
+      .classed(C.GRAPHVIZ_TOOLS_CLASS, true);
 
-    this.node.appendChild(this.div);
+    const that = this;
+
+    const zoomLabel = toolbar.append("label").text("Zoom");
+
+    this._zoomSlider = zoomLabel.append('input')
+      .attr({
+        type: "range",
+        min: 0.0001,
+        max: 10,
+        step: 0.01,
+      })
+      .on("input", () => {
+        const value = (d3.event as any).currentTarget.valueAsNumber;
+        that.zoomLevel = value;
+      });
+
+    const buildLabel = toolbar.append("label").text("Build");
+
+    const lineSliders = buildLabel
+      .selectAll('input')
+      .data([
+        (v: number) => this._buildStart = v,
+        (v: number) => this._buildEnd = v
+      ])
+
+    lineSliders
+      .enter()
+      .append('input')
+      .attr({
+        type: "range",
+        min: 1,
+        max: 100,
+        step: 1,
+        value: (d, i) => i == 0 ? 0 : 100
+      })
+      .on("input", (d) => {
+        lineSliders.attr({max: this._lastRaw.split("\n").length});
+        d((d3.event as any).currentTarget.valueAsNumber);
+        that.draw();
+      });
+
+    const centerLabel = toolbar.append("label").text("Center");
+
+    centerLabel.append("input")
+      .attr({type: "checkbox", checked: true})
+      .on("change", () => {
+        that.autoCenter = (d3.event as any).currentTarget.checked;
+      });
 
     this._zoom = d3.behavior.zoom()
       .on('zoom', () => this.onZoom());
 
-    this._zoom(d3.select(this.div));
+    this._zoom(this._div);
+  }
+
+  get zoomLevel() {
+    return this._lastZoom.scale;
+  }
+
+  set zoomLevel(zoomLevel) {
+    this._zoom
+      .scale(zoomLevel)
+      .event(this.g);
+  }
+
+  get autoCenter() {
+    return this._autoCenter;
+  }
+
+  set autoCenter(autoCenter) {
+    this._autoCenter = autoCenter;
+    if(autoCenter) {
+      this.zoomFit();
+    }
+  }
+
+  get g() {
+    return this.svg.select("g");
+  }
+
+  get svg() {
+    return d3.select(this.node).select("svg");
+  }
+
+  draw(graphviz: string=null, options={}) {
+    const hasPartial = this._buildStart != null || this._buildEnd != null;
+
+    if(!graphviz && !this._lastRaw){
+      return Promise.resolve();
+    }
+
+    graphviz = graphviz || this._lastRaw;
+
+    var cleaned: string = graphviz;
+
+    if (hasPartial) {
+      const lines = graphviz.split("\n");
+      cleaned = lines.slice(0, 1)
+        .concat(lines.slice(this._buildStart || 1,
+                            this._buildEnd || lines.length))
+        .concat(["}"])
+        .join("\n");
+    }
+
+    if(cleaned == this._lastRender) {
+      return Promise.resolve();
+    }
+
+    let viz: string;
+    try {
+      viz = Viz(cleaned, { engine: this._engine });
+    } catch(err) {
+      console.groupCollapsed("graphviz error");
+      console.error(err);
+      console.groupEnd();
+      return Promise.resolve();
+    }
+
+    this._lastRender = cleaned;
+    this._lastRaw = graphviz;
+    this.viz = viz.replace(/ id="[^"]+"/g, ' ')
+      .replace(/ class="(node|edge|cluster)"/g, ' class="jp-graphviz-$1"');
+
+    this._div.html(this.viz);
+
+    this.zoom();
+
+    const {width, height} = options as any;
+
+    this.svg.style({
+      "min-width": width ? `${width}` :
+        this._lastSize ? this._lastSize[0] :
+        null,
+      "min-height": height ? `${height}` :
+        this._lastSize ? this._lastSize[1] :
+        null,
+    });
+    this.zoomFit();
+
+    return Promise.resolve();
   }
 
   /**
    * Render into this widget's node.
    */
   renderModel(model: IRenderMime.IMimeModel): Promise<void> {
-    let data = model.data[this._mimeType];
+    const data = model.data[this._mimeType] as string;
+    const metadata = model.metadata;
 
-    try {
-      this.viz = Viz(data, { engine: this._engine });
-    } catch(err) {
-      console.groupCollapsed("graphviz error");
-      console.error(err);
-      console.groupEnd();
+    return this.draw(data, metadata);
+  }
+
+  onAfterAttach(msg: Message) {
+    super.onAfterAttach(msg);
+    this._zoom(this._div);
+    this.zoomFit();
+  }
+
+
+  stripIds() {
+    this.svg.selectAll("*[id]").attr("id", null);
+  }
+
+  onResize(msg: Widget.ResizeMessage) {
+    if(this._autoCenter) {
+      this.zoomFit(msg.width, msg.height);
     }
-
-    this.div.innerHTML = this.viz;
-    this.zoom();
-
-    return Promise.resolve();
   }
 
   zoom() {
-    const div = d3.select(this.div);
-    const svg = div.select("svg");
+    const svg = this.svg;
+    const g = this.g;
 
     // right now only using the height, because svg
-    const size = [svg.attr("width"), svg.attr("height")].map(parseFloat);
-    const tx = this._zoom.translate() || [0, 0];
+    const size = this._lastSize = [svg.attr("width"), svg.attr("height")]
+      .map(parseFloat) as [number, number];
+    let tx = this._zoom.translate() || [0, 0];
+    let scale = this._zoom.scale() || 1.0;
 
     // clear out the fixed values
     svg.attr({width: null, height: null, viewBox: null});
 
-    // re-initialize zoom settings
+    tx = this._lastZoom ? this._lastZoom.translate :
+      (tx[0] || tx[1]) ? tx :
+      [0, size[1]];
+
+    scale = this._lastZoom ? this._lastZoom.scale :
+      scale != 1.0 ? scale :
+      1.0;
+
     this._zoom
-      .translate((tx[0] || tx[1]) ? tx : [0, size[1]])
-      .event(div);
+      .translate(tx)
+      .scale(scale);
+
+    g.attr("transform", `translate(${tx}) scale(${scale})`);
+
+    // re-initialize zoom settings
+    if (this._autoCenter) {
+      this.zoomFit();
+    } else{
+      this._zoom.event(g);
+    }
   }
 
+  zoomFit(width: number=null, height: number=null) {
+    const root = this._div.select("svg g");
+
+    const b = width !== null ?
+      {width, height} :
+      (this._div.node() as HTMLElement).getBoundingClientRect();
+
+
+    const g = {width: this._lastSize[0], height: this._lastSize[1]};
+
+    if(!(b.width && b.height && g.width && g.height)) {
+      return;
+    }
+
+    const scale = Math.min(b.width / g.width, b.height / g.height);
+    const translate = [
+      b.width / 2 - scale * (g.width / 2),
+      b.height / 2 + scale * (g.height / 2)
+    ] as [number, number];
+
+    root.call(this._zoom.translate(translate).scale(scale).event);
+  }
+
+
   onZoom() {
-    const evt = d3.event as d3.ZoomEvent;
-    d3.select(this.div)
-      .select("svg g")
+    const evt = this._lastZoom = d3.event as d3.ZoomEvent;
+
+    if(isNaN(evt.translate[0]) || isNaN(evt.translate[1]) || !evt.scale) {
+      return;
+    }
+
+    this._div.select("svg g")
       .attr("transform", `translate(${evt.translate}) scale(${evt.scale})`);
+
+    this._zoomSlider.property({value: evt.scale});
   }
 
   viz: any;
-  div: HTMLDivElement;
+  private _div: d3.Selection<any>;
   private _mimeType: string;
   private _engine: any;
   private _zoom: d3.behavior.Zoom<any>;
+  private _autoCenter = true;
+  private _lastRender = "";
+  private _lastRaw = "";
+  private _lastSize: [number, number];
+  private _lastZoom: d3.ZoomEvent;
+  private _zoomSlider: d3.Selection<any>;
+  private _buildStart: number;
+  private _buildEnd: number;
 }
 
 /**
@@ -107,12 +309,12 @@ class RenderedData extends Widget implements IRenderMime.IRenderer {
 export
 const rendererFactory: IRenderMime.IRendererFactory = {
   safe: false,
-  mimeTypes: Object.keys(TYPES),
+  mimeTypes: Object.keys(C.TYPES),
   createRenderer: options => new RenderedData(options)
 };
 
-const extensions = Object.keys(TYPES).map(k => {
-  const name = TYPES[k].name;
+const extensions = Object.keys(C.TYPES).map(k => {
+  const name = C.TYPES[k].name;
   return {
     id: `jupyterlab.graphviz.${name}`,
     name,
@@ -121,7 +323,7 @@ const extensions = Object.keys(TYPES).map(k => {
     dataType: 'string',
     fileTypes: [{
       name,
-      extensions: TYPES[k].extensions,
+      extensions: C.TYPES[k].extensions,
       mimeTypes: [k]
     }],
     documentWidgetFactoryOptions: {
