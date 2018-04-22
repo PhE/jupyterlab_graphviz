@@ -28,7 +28,7 @@
 /* toolbar */
 .jp-graphviz-tools {
   position: absolute;
-  opacity: 0.0;
+  opacity: 0;
   top: -24px;
   right: 0;
   left: 0;
