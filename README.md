@@ -1,43 +1,78 @@
-# jupyterlab graphviz
+# jupyterlab_graphviz
 
-A JupyterLab extension for viewing [graphviz](http://www.graphviz.org) data.
-files using the ###. A file renderer for files with `.dot` extensions and a mime renderer for the
-`application/vnd.graphviz` mimetype is included. This extension uses the
-[viz.js](https://github.com/mdaines/viz.js).
+A JupyterLab extension for viewing [graphviz](http://www.graphviz.org) data
+files using [viz.js](https://github.com/mdaines/viz.js/).
+
+`jupyterlab_graphviz` provides file renderers for files with the following
+extensions:
+- `.gv`
+- `.neato`
+- `.dot`
+
+...and renderers for the following MIME types:
+- `application/vnd.graphviz.neato`
+- `application/vnd.graphviz`
 
 ![Screenshot](hello.png)
 
-To use the file viewer, right-click on a `.dot` file and choose the `dot` viewer.
+To use the file viewer, right-click on a `.dot` file and choose the `dot`
+viewer.
+
 
 ## Prerequisites
+* [JupyterLab](https://github.com/jupyterlab/jupyterlab)
 
-* JupyterLab
 
 ## Installation
-
 ```bash
 jupyter labextension install jupyterlab_graphviz
 ```
 
+
 ## Development
+### Prerequisites
+- `jupyterlab>=0.32`
+- `nodejs>=8`
 
-For a development install (requires npm version 4 or later), do the following in the repository directory:
-
+For example, via `conda`:
 ```bash
-npm install
+conda install -c conda-forge jupyterlab nodejs
+```
+
+### Install dependencies
+```bash
+jlpm
+```
+
+### Build the extension
+```bash
+jlpm build
+```
+
+### Install into to your JupyterLab
+```
 jupyter labextension link .
 ```
 
+### Rebuild once
 To rebuild the package and the JupyterLab app:
 
 ```bash
-npm run build
+jlpm build
 jupyter lab build
 ```
 
+### Develop continuously
+```bash
+jlpm watch
+# and in another terminal
+jupyter lab --watch
+```
+
+### Check and apply project style
+```bash
+jlpm lint
+```
+
 ## TODO
-
-* support neato engine rendering with a specific MIME type
 * add tests
-* allow zooming in/out
-

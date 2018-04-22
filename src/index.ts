@@ -8,11 +8,11 @@ import {Widget} from '@phosphor/widgets';
 
 import {Message} from '@phosphor/messaging';
 
-import * as Viz from 'viz.js';
 import * as d3 from 'd3';
 
 import * as C from './constants';
 import {defineGraphvizMode} from './mode';
+import {Viz} from './viz-wrap';
 
 import '../style/index.css';
 
@@ -51,31 +51,6 @@ export class RenderedData extends Widget implements IRenderMime.IRenderer {
       .on('input', () => {
         const value = (d3.event as any).currentTarget.valueAsNumber;
         that.zoomLevel = value;
-      });
-
-    const buildLabel = toolbar.append('label').text('Build');
-
-    const lineSliders = buildLabel
-      .selectAll('input')
-      .data([
-        (v: number) => (this._buildStart = v),
-        (v: number) => (this._buildEnd = v),
-      ]);
-
-    lineSliders
-      .enter()
-      .append('input')
-      .attr({
-        type: 'range',
-        min: 1,
-        max: 100,
-        step: 1,
-        value: (d, i) => (i === 0 ? 0 : 100),
-      })
-      .on('input', (d) => {
-        lineSliders.attr({max: this._lastRaw.split('\n').length});
-        d((d3.event as any).currentTarget.valueAsNumber);
-        that.draw();
       });
 
     const centerLabel = toolbar.append('label').text('Center');
@@ -119,9 +94,7 @@ export class RenderedData extends Widget implements IRenderMime.IRenderer {
     return d3.select(this.node).select('svg');
   }
 
-  draw(graphviz: string = null, options = {}) {
-    const hasPartial = this._buildStart != null || this._buildEnd != null;
-
+  async draw(graphviz: string = null, options = {}) {
     if (!graphviz && !this._lastRaw) {
       return Promise.resolve();
     }
@@ -130,29 +103,19 @@ export class RenderedData extends Widget implements IRenderMime.IRenderer {
 
     let cleaned: string = graphviz;
 
-    if (hasPartial) {
-      const lines = graphviz.split('\n');
-      cleaned = lines
-        .slice(0, 1)
-        .concat(
-          lines.slice(this._buildStart || 1, this._buildEnd || lines.length)
-        )
-        .concat(['}'])
-        .join('\n');
-    }
-
     if (cleaned === this._lastRender) {
       return Promise.resolve();
     }
 
     let viz: string;
+
     try {
-      viz = Viz(cleaned, {engine: this._engine});
+      viz = await Viz(cleaned, {engine: this._engine});
     } catch (err) {
       console.groupCollapsed('graphviz error');
       console.error(err);
       console.groupEnd();
-      return Promise.resolve();
+      return;
     }
 
     this._lastRender = cleaned;
@@ -180,8 +143,6 @@ export class RenderedData extends Widget implements IRenderMime.IRenderer {
           : null,
     });
     this.zoomFit();
-
-    return Promise.resolve();
   }
 
   /**
@@ -245,6 +206,9 @@ export class RenderedData extends Widget implements IRenderMime.IRenderer {
   }
 
   zoomFit(width: number = null, height: number = null) {
+    if (!this._lastSize) {
+      return;
+    }
     const root = this._div.select('svg g');
 
     const b =
@@ -252,13 +216,17 @@ export class RenderedData extends Widget implements IRenderMime.IRenderer {
         ? {width, height}
         : (this._div.node() as HTMLElement).getBoundingClientRect();
 
-    const g = {width: this._lastSize[0], height: this._lastSize[1]};
+    const g = {
+      width: this._lastSize[0],
+      height: this._lastSize[1],
+    };
 
     if (!(b.width && b.height && g.width && g.height)) {
       return;
     }
 
-    const scale = Math.min(b.width / g.width, b.height / g.height);
+    const scale =
+      Math.min(b.width / g.width, b.height / g.height) * C.GRAPHVIZ_CENTER_PAD;
     const translate = [
       b.width / 2 - scale * (g.width / 2),
       b.height / 2 + scale * (g.height / 2),
@@ -292,8 +260,6 @@ export class RenderedData extends Widget implements IRenderMime.IRenderer {
   private _lastSize: [number, number];
   private _lastZoom: d3.ZoomEvent;
   private _zoomSlider: d3.Selection<any>;
-  private _buildStart: number;
-  private _buildEnd: number;
 }
 
 /**

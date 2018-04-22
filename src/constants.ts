@@ -17,3 +17,4 @@ export const TYPES: {
 export const GRAPHVIZ_CLASS = 'jp-graphviz';
 export const GRAPHVIZ_TOOLS_CLASS = 'jp-graphviz-tools';
 export const GRAPHVIZ_GRAPH_CLASS = 'jp-graphviz-graph';
+export const GRAPHVIZ_CENTER_PAD = 0.95;
