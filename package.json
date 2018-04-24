@@ -1,20 +1,25 @@
 {
   "author": "Philippe ENTZMANN",
-  "description": "A JupyterLab extension for viewing graphviz files.",
   "dependencies": {
-    "@jupyterlab/application": "^0.15.1",
-    "@jupyterlab/rendermime-interfaces": "^1.0.3",
+    "@jupyterlab/application": "^0.16.2",
+    "@jupyterlab/rendermime-interfaces": "^1.0.9",
     "@phosphor/widgets": "^1.5.0",
     "d3": "~3.5.17",
-    "viz.js": "^1.8.0"
+    "viz.js": "^1.8.1"
   },
+  "description": "A JupyterLab extension for viewing graphviz files.",
   "devDependencies": {
     "@types/d3": "^3",
-    "rimraf": "^2.6.2",
-    "typescript": "~2.6.2"
+    "prettier": "1.12.1",
+    "rimraf": "~2.6.2",
+    "tslint": "^5.9.1",
+    "tslint-config-prettier": "^1.12.0",
+    "typescript": "~2.8.3",
+    "tslib": "^1.9.0"
   },
   "files": [
-    "{lib,style}/**/*.{css,d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}"
+    "{lib,style}/**/*.{css,d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
+    "LICENSE"
   ],
   "jupyterlab": {
     "mimeExtension": true
@@ -26,13 +31,20 @@
   "license": "BSD-3-Clause",
   "main": "lib/index.js",
   "name": "jupyterlab_graphviz",
+  "prettier": {
+    "arrowParens": "always",
+    "bracketSpacing": false,
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/PhE/jupyterlab_graphviz.git"
   },
   "scripts": {
-    "build": "tsc",
-    "clean": "rimraf lib"
+    "build": "tsc --project src",
+    "clean": "rimraf lib",
+    "lint": "tslint --project src --fix && prettier --write \"{src,style,typings}/**/*.{ts,css,json}\""
   },
-  "version": "0.1.1"
+  "version": "0.2.1"
 }

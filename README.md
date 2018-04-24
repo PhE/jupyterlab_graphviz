@@ -1,43 +1,88 @@
-# jupyterlab graphviz
+# jupyterlab_graphviz
 
-A JupyterLab extension for viewing [graphviz](http://www.graphviz.org) data.
-files using the ###. A file renderer for files with `.dot` extensions and a mime renderer for the
-`application/vnd.graphviz` mimetype is included. This extension uses the
-[viz.js](https://github.com/mdaines/viz.js).
+> A JupyterLab extension for interactively viewing [Graphviz](https://www.graphviz.org) data
+files, powered by [viz.js](https://github.com/mdaines/viz.js/).
 
 ![Screenshot](hello.png)
 
-To use the file viewer, right-click on a `.dot` file and choose the `dot` viewer.
+## Editing and viewing DOT language files
+Right-click on a supported file in the **Files** sidebar
+and choose **Open with... ▶ dot**.
 
-## Prerequisites
+The following [DOT language](https://www.graphviz.org/doc/info/lang.html) file
+extensions are supported with live preview and syntax highlighting:
+- `.gv`
+- `.neato`
+- `.dot`
 
-* JupyterLab
+## Inline rendering
+The following MIME types can also be rendered inline in Notebooks and Consoles:
+- `application/vnd.graphviz.neato`
+- `application/vnd.graphviz`
+
+> Check out some MIME examples in the
+[Cookbook](./samples/Graphviz Rich Display Cookbook.ipynb).
+
+## Pan and zoom
+File-based and inline diagrams can be panned by clicking and dragging. Use a
+mouse wheel, double click or the **Zoom** slider. `Shift` and double click zooms out.
+
+## Text Search in Diagrams
+Diagrams are rendered directly as SVG elements, so normal browser search can
+find text.
 
 ## Installation
+> ### Prerequisites
+* [JupyterLab](https://github.com/jupyterlab/jupyterlab) ≥ 0.32
+* [nodejs](https://nodejs.org/en/) ≥ 6
+
+> For example, via `conda`:
+```bash
+conda install -c conda-forge jupyterlab nodejs
+```
 
 ```bash
 jupyter labextension install jupyterlab_graphviz
 ```
 
+
 ## Development
-
-For a development install (requires npm version 4 or later), do the following in the repository directory:
-
+### Install dependencies
 ```bash
-npm install
+jlpm
+```
+
+### Build the extension
+```bash
+jlpm build
+```
+
+### Install into to my JupyterLab
+```bash
 jupyter labextension link .
 ```
 
+### Rebuild once
 To rebuild the package and the JupyterLab app:
 
 ```bash
-npm run build
+jlpm build
 jupyter lab build
 ```
 
+### Develop continuously
+```bash
+jlpm watch
+# and in another terminal
+jupyter lab --watch
+```
+
+### Check and apply project style
+```bash
+jlpm lint
+```
+
 ## TODO
-
-* support neato engine rendering with a specific MIME type
 * add tests
-* allow zooming in/out
-
+* add _Save as..._
+* build bundle for nbviewer
