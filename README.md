@@ -1,44 +1,52 @@
 # jupyterlab_graphviz
 
-A JupyterLab extension for viewing [graphviz](http://www.graphviz.org) data
-files using [viz.js](https://github.com/mdaines/viz.js/).
+> A JupyterLab extension for interactively viewing [Graphviz](https://www.graphviz.org) data
+files, powered by [viz.js](https://github.com/mdaines/viz.js/).
 
-`jupyterlab_graphviz` provides file renderers for files with the following
-extensions:
+![Screenshot](hello.png)
+
+## Editing and viewing DOT language files
+Right-click on a supported file in the **Files** sidebar
+and choose **Open with... ▶ dot**.
+
+The following [DOT language](https://www.graphviz.org/doc/info/lang.html) file
+extensions are supported with live preview and syntax highlighting:
 - `.gv`
 - `.neato`
 - `.dot`
 
-...and renderers for the following MIME types:
+## Inline rendering
+The following MIME types can also be rendered inline in Notebooks and Consoles:
 - `application/vnd.graphviz.neato`
 - `application/vnd.graphviz`
 
-![Screenshot](hello.png)
+> Check out some MIME examples in the
+[Cookbook](./samples/Graphviz Rich Display Cookbook.ipynb).
 
-To use the file viewer, right-click on a `.dot` file and choose the `dot`
-viewer.
+## Pan and zoom
+File-based and inline diagrams can be panned by clicking and dragging. Use a
+mouse wheel, double click or the **Zoom** slider. `Shift` and double click zooms out.
 
-
-## Prerequisites
-* [JupyterLab](https://github.com/jupyterlab/jupyterlab)
-
+## Text Search in Diagrams
+Diagrams are rendered directly as SVG elements, so normal browser search can
+find text.
 
 ## Installation
+> ### Prerequisites
+* [JupyterLab](https://github.com/jupyterlab/jupyterlab) ≥ 0.32
+* [nodejs](https://nodejs.org/en/) ≥ 6
+
+> For example, via `conda`:
+```bash
+conda install -c conda-forge jupyterlab nodejs
+```
+
 ```bash
 jupyter labextension install jupyterlab_graphviz
 ```
 
 
 ## Development
-### Prerequisites
-- `jupyterlab>=0.32`
-- `nodejs>=8`
-
-For example, via `conda`:
-```bash
-conda install -c conda-forge jupyterlab nodejs
-```
-
 ### Install dependencies
 ```bash
 jlpm
@@ -49,8 +57,8 @@ jlpm
 jlpm build
 ```
 
-### Install into to your JupyterLab
-```
+### Install into to my JupyterLab
+```bash
 jupyter labextension link .
 ```
 
@@ -76,3 +84,5 @@ jlpm lint
 
 ## TODO
 * add tests
+* add _Save as..._
+* build bundle for nbviewer

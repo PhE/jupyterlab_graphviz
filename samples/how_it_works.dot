@@ -1,0 +1,70 @@
+digraph g { label="how jupyterlab_graphviz works"
+labelloc=top fontsize=32
+fontname="sans-serif" concentrate=true compound=true
+node[fontname="sans-serif" shape=none]
+graph[fontsize=18]
+
+me[label="😊" fontsize=42]
+
+subgraph cluster_opc { label="other peoples' computers"
+  node[shape=rect]
+  emscripten[shape=none]
+  graphviz -> emscripten -> "viz.js"
+  d3 codemirror jupyterlab_graphviz app[label="@jupyterlab/*"]
+}
+
+subgraph cluster_mine { label="my computer"
+  subgraph cluster_build { label="my jupyterlab app"
+    {app jupyterlab_graphviz codemirror d3 "viz.js"}
+    -> {jlpm[label="jupyter labextension install"]}
+    -> {node_modules[shape=rect label="node_modules\n~176MB"]}
+    -> webpack
+    -> {
+      lab_bundle[label=" lab.bundle.js \n~6MB" shape=rect]
+      viz_bundle[label=" viz.bundle.js \n~2MB" shape=rect]
+    }
+  }
+
+  subgraph cluster_kernels { label="my kernels"
+    kernel
+  }
+
+  subgraph cluster_files { label="my files"
+    dot[label="graph.dot" shape=rect]
+    ipynb[label="notebook.ipynb" shape=rect]
+  }
+  
+  subgraph cluster_server {label="my notebook server"
+    ContentsManager
+    KernelManager
+  }
+
+  subgraph cluster_browser { label="my browser"
+    Application
+    DocRegistry
+    Notebook
+    FileEditor
+    CodeMirror
+    RenderedData
+    model[label="IMimeModel"]
+    mime[label="application/vnd.graphviz" shape=rect]
+    Viz
+    raw[label="Raw SVG" shape=rect]
+    svg[label="Interactive\nSVG" shape=rect]
+  }
+}
+
+me -> jlpm[style=dotted]
+me -> {CodeMirror svg}[dir=both]
+lab_bundle -> Application -> DocRegistry
+DocRegistry -> {Notebook FileEditor}[dir=both]
+viz_bundle -> Viz[style=dashed]
+{ipynb dot} -> ContentsManager[dir=both] 
+ContentsManager -> DocRegistry[dir=both]
+Notebook -> kernel -> mime -> model
+{Notebook FileEditor} -> CodeMirror
+model -> RenderedData -> svg
+RenderedData -> Viz -> raw -> RenderedData
+KernelManager -> kernel
+model -> CodeMirror[dir=both]
+}
