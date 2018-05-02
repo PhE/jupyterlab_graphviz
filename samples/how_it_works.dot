@@ -20,7 +20,7 @@ subgraph cluster_mine { label="my computer"
     -> {node_modules[shape=rect label="node_modules\n~176MB"]}
     -> webpack
     -> {
-      lab_bundle[label=" lab.bundle.js \n~6MB" shape=rect]
+      lab_bundle[label=" lab.bundle.js \n~2MB" shape=rect]
       viz_bundle[label=" viz.bundle.js \n~2MB" shape=rect]
     }
   }
@@ -33,7 +33,7 @@ subgraph cluster_mine { label="my computer"
     dot[label="graph.dot" shape=rect]
     ipynb[label="notebook.ipynb" shape=rect]
   }
-  
+
   subgraph cluster_server {label="my notebook server"
     ContentsManager
     KernelManager
@@ -47,7 +47,7 @@ subgraph cluster_mine { label="my computer"
     CodeMirror
     RenderedData
     model[label="IMimeModel"]
-    mime[label="application/vnd.graphviz" shape=rect]
+    mime[label="text/vnd.graphviz" shape=rect]
     Viz
     raw[label="Raw SVG" shape=rect]
     svg[label="Interactive\nSVG" shape=rect]
@@ -59,7 +59,7 @@ me -> {CodeMirror svg}[dir=both]
 lab_bundle -> Application -> DocRegistry
 DocRegistry -> {Notebook FileEditor}[dir=both]
 viz_bundle -> Viz[style=dashed]
-{ipynb dot} -> ContentsManager[dir=both] 
+{ipynb dot} -> ContentsManager[dir=both]
 ContentsManager -> DocRegistry[dir=both]
 Notebook -> kernel -> mime -> model
 {Notebook FileEditor} -> CodeMirror

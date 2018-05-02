@@ -12,13 +12,13 @@ and choose **Open with... ▶ dot**.
 The following [DOT language](https://www.graphviz.org/doc/info/lang.html) file
 extensions are supported with live preview and syntax highlighting:
 - `.gv`
-- `.neato`
 - `.dot`
+- `.neato`
 
 ## Inline rendering
 The following MIME types can also be rendered inline in Notebooks and Consoles:
-- `application/vnd.graphviz.neato`
-- `application/vnd.graphviz`
+- `text/vnd.graphviz.neato`
+- `text/vnd.graphviz`
 
 > Check out some MIME examples in the
 [Cookbook](./samples/Graphviz Rich Display Cookbook.ipynb).
