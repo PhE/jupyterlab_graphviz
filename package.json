@@ -44,7 +44,8 @@
   "scripts": {
     "build": "tsc --project src",
     "clean": "rimraf lib",
-    "lint": "tslint --project src --fix && prettier --write \"{src,style,typings}/**/*.{ts,css,json}\""
+    "lint": "tslint --project src --fix && prettier --write \"{src,style,typings}/**/*.{ts,css,json}\"",
+    "watch": "jlpm build --watch"
   },
   "version": "0.2.1"
 }
