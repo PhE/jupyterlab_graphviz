@@ -16,8 +16,7 @@ extensions are supported with live preview and syntax highlighting:
 - `.neato`
 
 ## Inline rendering
-The following MIME types can also be rendered inline in Notebooks and Consoles:
-- `text/vnd.graphviz.neato`
+The following MIME type can also be rendered inline in Notebooks and Consoles:
 - `text/vnd.graphviz`
 
 > Check out some MIME examples in the
