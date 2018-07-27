@@ -6,7 +6,7 @@ dependencies:
   - dask
   - distributed
   - graphviz
-  - jupyterlab >=0.32,<0.33
+  - jupyterlab >=0.33,<0.34
   - networkx
   - nltk
   - nodejs
