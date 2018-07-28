@@ -4,18 +4,20 @@
     "@jupyterlab/application": "^0.17.2",
     "@jupyterlab/rendermime-interfaces": "^1.1.2",
     "@phosphor/widgets": "^1.6.0",
+    "codemirror": "~5.39.0",
     "d3": "~3.5.17",
-    "viz.js": "^2.0.0"
+    "viz.js": "^2.0.0",
+    "worker-loader": "^2.0.0"
   },
   "description": "A JupyterLab extension for viewing graphviz files.",
   "devDependencies": {
     "@types/d3": "^3",
+    "@types/webpack-env": "~1.13.6",
     "prettier": "1.13.7",
     "rimraf": "~2.6.2",
     "tslint": "^5.9.1",
     "tslint-config-prettier": "^1.14.0",
-    "typescript": "~2.9.2",
-    "tslib": "^1.9.0"
+    "typescript": "~2.9.2"
   },
   "files": [
     "{lib,style}/**/*.{css,d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",

@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - antlr-python-runtime
   - dask
   - distributed
   - graphviz

@@ -1,6 +1,11 @@
-import * as CodeMirror from 'codemirror';
+// tslint:disable-next-line
+/// <reference path="../typings/codemirror/codemirror.d.ts"/>
 
-import 'codemirror/addon/mode/simple';
+import * as simpleMode from 'codemirror/addon/mode/simple';
+
+console.log(simpleMode);
+
+import * as CodeMirror from 'codemirror';
 
 import {TYPES} from './constants';
 
@@ -213,7 +218,13 @@ const STATES = {
 };
 
 export function defineGraphvizMode() {
-  (CodeMirror as any).defineSimpleMode(MODE_NAME, STATES);
+  const _CodeMirror = CodeMirror as any;
+
+  if (_CodeMirror.defineSimpleMode == null) {
+    setTimeout(defineGraphvizMode, 100);
+    return;
+  }
+  _CodeMirror.defineSimpleMode(MODE_NAME, STATES);
 
   for (let t in TYPES) {
     CodeMirror.defineMIME(t, MODE_NAME);
