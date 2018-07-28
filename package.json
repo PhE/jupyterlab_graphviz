@@ -59,10 +59,11 @@
     "bootstrap": "jlpm && jlpm clean && jlpm lint && jlpm build && jlpm lab:link && jlpm lab:build",
     "build": "tsc --project src",
     "clean": "rimraf lib",
+    "lab": "jupyter lab --no-browser --debug",
     "lab:build": "jupyter lab build",
     "lab:build:dev": "jupyter lab build --dev",
     "lab:link": "jupyter labextension link . --no-build",
-    "lab:watch": "jupyter lab --watch",
+    "lab:watch": "jupyter lab --watch --dev --no-browser",
     "lint": "tslint --project src --fix && prettier --write \"{src,style,typings}/**/*.{ts,css,json}\"",
     "watch": "jlpm build --watch"
   },
