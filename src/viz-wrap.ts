@@ -1,10 +1,25 @@
-import * as VizModuleType from 'viz.js';
-let _viz: VizModuleType.IViz;
+/**
+ * This file exists as a target for `require.ensure` so that the 2MB worker
+ * isn't loaded until an actual render is requested.
+ */
 
-export async function dotToSVG(...args: any[]) {
-  if (!_viz) {
-    const vizMod = (await import(/* webpackChunkName: "vizjs" */ 'viz.js')) as typeof VizModuleType;
-    _viz = new vizMod.default({});
+import Viz from 'viz.js';
+import VizWorker from 'worker-loader!viz.js/full.render';
+
+/** Expose or create the singleton */
+export function viz() {
+  if (Private.viz == null) {
+    Private.viz = new Viz({worker: new (VizWorker as any)()});
   }
-  return _viz.renderString(args[0] as string, {});
+  return Private.viz;
+}
+
+/**
+ * A namespace for private module data.
+ */
+namespace Private {
+  /**
+   * A cached reference to the viz.js worker.
+   */
+  export let viz: Viz;
 }

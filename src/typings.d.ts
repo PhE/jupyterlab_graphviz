@@ -4,3 +4,7 @@
 declare module 'codemirror/addon/mode/simple' {
 
 }
+
+declare module 'worker-loader!viz.js/full.render' {
+
+}

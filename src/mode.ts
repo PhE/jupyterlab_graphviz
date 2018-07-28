@@ -3,13 +3,13 @@
 
 import * as simpleMode from 'codemirror/addon/mode/simple';
 
-console.log(simpleMode);
-
 import * as CodeMirror from 'codemirror';
 
 import {TYPES} from './constants';
 
 export const MODE_NAME = 'Graphviz';
+
+const DEBUG = false;
 
 const ALL_ATTRS = [
   '_background',
@@ -218,12 +218,10 @@ const STATES = {
 };
 
 export function defineGraphvizMode() {
-  const _CodeMirror = CodeMirror as any;
-
-  if (_CodeMirror.defineSimpleMode == null) {
-    setTimeout(defineGraphvizMode, 100);
-    return;
+  if (DEBUG) {
+    console.log(simpleMode);
   }
+  const _CodeMirror = CodeMirror as any;
   _CodeMirror.defineSimpleMode(MODE_NAME, STATES);
 
   for (let t in TYPES) {
