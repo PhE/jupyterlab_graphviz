@@ -219,7 +219,7 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
     if (!this._lastSize) {
       return;
     }
-    const root = this._div.select('svg g');
+    const root = this._div.select('svg');
 
     const b =
       width !== null
@@ -241,7 +241,6 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
       b.width / 2 - scale * (g.width / 2),
       b.height / 2 + scale * (g.height / 2),
     ] as [number, number];
-    console.log('should translate', translate);
     this._zoom.translateTo(root, translate[0], translate[1]);
     this._zoom.scaleTo(root, scale);
     // root.call(this._zoom.translate(translate).scale(scale).event);
