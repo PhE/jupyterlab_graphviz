@@ -16,6 +16,7 @@ import * as VizModuleType from 'viz.js';
 import * as VizFullRenderModel from 'viz.js/full.render';
 
 import * as d3 from 'd3';
+// import {drag as d3Drag} from 'd3-drag';
 
 import * as C from './constants';
 import {defineGraphvizMode} from './mode';
@@ -44,42 +45,44 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
 
     const that = this;
 
-    const zoomLabel = toolbar.append('label').text('Zoom');
+    // const zoomLabel = toolbar.append('label').text('Zoom');
 
-    this._zoomSlider = zoomLabel
-      .append('input')
-      .attr({
-        type: 'range',
-        min: 0.0001,
-        max: 10,
-        step: 0.01,
-      })
-      .on('input', () => {
-        const value = (d3.event as any).currentTarget.valueAsNumber;
-        that.zoomLevel = value;
-      });
+    // this._zoomSlider = zoomLabel
+    //   .append('input')
+    //   .attr('type', 'range')
+    //   .attr('min', 0.0001)
+    //   .attr('max', 10)
+    //   .attr('step', 0.01)
+    //   .on('input', () => {
+    //     const value = (d3.event as any).currentTarget.valueAsNumber;
+    //     that.zoomLevel = value;
+    // });
 
     const centerLabel = toolbar.append('label').text('Center');
 
     centerLabel
       .append('input')
-      .attr({type: 'checkbox', checked: true})
+      .attr('type', 'checkbox')
+      .attr('checked', true)
       .on('change', () => {
         that.autoCenter = (d3.event as any).currentTarget.checked;
       });
 
-    this._zoom = d3.behavior.zoom().on('zoom', () => this.onZoom());
+    this._zoom = d3
+      .zoom()
+      // .filter(() => true)
+      .on('zoom', () => this.onZoom());
 
-    this._zoom(this._div);
+    this._div.call(this._zoom);
   }
 
-  get zoomLevel() {
-    return this._lastZoom.scale;
-  }
-
-  set zoomLevel(zoomLevel) {
-    this._zoom.scale(zoomLevel).event(this.g);
-  }
+  // get zoomLevel() {
+  //   return this._lastZoom.transform;
+  // }
+  //
+  // set zoomLevel(zoomLevel) {
+  //   this._zoom.scale(zoomLevel).event(this.g);
+  // }
 
   get autoCenter() {
     return this._autoCenter;
@@ -138,18 +141,17 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
 
     const {width, height} = options as any;
 
-    this.svg.style({
-      'min-width': width
-        ? `${width}`
-        : this._lastSize
-          ? this._lastSize[0]
-          : null,
-      'min-height': height
-        ? `${height}`
-        : this._lastSize
-          ? this._lastSize[1]
-          : null,
-    });
+    this.svg.call(this._zoom);
+
+    this.svg
+      .style(
+        'min-width',
+        width ? `${width}` : this._lastSize ? this._lastSize[0] : null
+      )
+      .style(
+        'min-height',
+        height ? `${height}` : this._lastSize ? this._lastSize[1] : null
+      );
     this.zoomFit();
   }
 
@@ -165,7 +167,6 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
 
   onAfterAttach(msg: Message) {
     super.onAfterAttach(msg);
-    this._zoom(this._div);
     this.zoomFit();
   }
 
@@ -180,37 +181,39 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
   }
 
   zoom() {
-    const svg = this.svg;
-    const g = this.g;
-
-    // right now only using the height, because svg
-    const size = (this._lastSize = [svg.attr('width'), svg.attr('height')].map(
-      parseFloat
-    ) as [number, number]);
-    let tx = this._zoom.translate() || [0, 0];
-    let scale = this._zoom.scale() || 1.0;
-
-    // clear out the fixed values
-    svg.attr({width: null, height: null, viewBox: null});
-
-    tx = this._lastZoom
-      ? this._lastZoom.translate
-      : tx[0] || tx[1]
-        ? tx
-        : [0, size[1]];
-
-    scale = this._lastZoom ? this._lastZoom.scale : scale !== 1.0 ? scale : 1.0;
-
-    this._zoom.translate(tx).scale(scale);
-
-    g.attr('transform', `translate(${tx}) scale(${scale})`);
-
-    // re-initialize zoom settings
-    if (this._autoCenter) {
-      this.zoomFit();
-    } else {
-      this._zoom.event(g);
-    }
+    // const svg = this.svg;
+    // const g = this.g;
+    //
+    // // right now only using the height, because svg
+    // const size = (this._lastSize = [svg.attr('width'), svg.attr('height')].map(
+    //   parseFloat
+    // ) as [number, number]);
+    // let tx = this._zoom.translate() || [0, 0];
+    // let scale = this._zoom.scale() || 1.0;
+    //
+    // // clear out the fixed values
+    // svg.attr('width', null)
+    //   .attr('height', null)
+    //   .attr('viewBox', null);
+    //
+    // tx = this._lastZoom
+    //   ? this._lastZoom.translate
+    //   : tx[0] || tx[1]
+    //     ? tx
+    //     : [0, size[1]];
+    //
+    // scale = this._lastZoom ? this._lastZoom.scale : scale !== 1.0 ? scale : 1.0;
+    //
+    // this._zoom.translate(tx).scale(scale);
+    //
+    // g.attr('transform', `translate(${tx}) scale(${scale})`);
+    //
+    // // re-initialize zoom settings
+    // if (this._autoCenter) {
+    //   this.zoomFit();
+    // } else {
+    //   this._zoom.event(g);
+    // }
   }
 
   zoomFit(width: number = null, height: number = null) {
@@ -239,40 +242,42 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
       b.width / 2 - scale * (g.width / 2),
       b.height / 2 + scale * (g.height / 2),
     ] as [number, number];
-
-    root.call(this._zoom.translate(translate).scale(scale).event);
+    console.log('should translate', translate);
+    this._zoom.translateTo(root, translate[0], translate[1]);
+    this._zoom.scaleTo(root, scale);
+    // root.call(this._zoom.translate(translate).scale(scale).event);
+    root.call(this._zoom.transform);
   }
 
   onZoom() {
-    const evt = (this._lastZoom = d3.event as d3.ZoomEvent);
+    const evt = (this._lastZoom = d3.event as d3.D3ZoomEvent<SVGElement, any>);
 
     if (
       evt == null ||
-      isNaN(evt.translate[0]) ||
-      isNaN(evt.translate[1]) ||
-      !evt.scale
+      isNaN(evt.transform.x) ||
+      isNaN(evt.transform.y) ||
+      !evt.transform.k
     ) {
       return;
     }
 
-    this._div
-      .select('svg g')
-      .attr('transform', `translate(${evt.translate}) scale(${evt.scale})`);
-
-    this._zoomSlider.property({value: evt.scale});
+    console.log(`${d3.event.transform}`);
+    this._div.select('svg g').attr('transform', d3.event.transform);
+    //
+    // this._zoomSlider.property({value: evt.scale});
   }
 
   viz: any;
-  private _div: d3.Selection<any>;
+  private _div: d3.Selection<any, any, any, any>;
   private _mimeType: string;
   private _engine: any;
-  private _zoom: d3.behavior.Zoom<any>;
+  private _zoom: d3.ZoomBehavior<any, any>;
   private _autoCenter = true;
   private _lastRender = '';
   private _lastRaw = '';
   private _lastSize: [number, number];
-  private _lastZoom: d3.ZoomEvent;
-  private _zoomSlider: d3.Selection<any>;
+  private _lastZoom: d3.D3ZoomEvent<any, any>;
+  // private _zoomSlider: d3.Selection<any, any, any, any>;
 }
 
 /**

@@ -5,14 +5,15 @@
     "@jupyterlab/rendermime-interfaces": "^1.1.2",
     "@phosphor/widgets": "^1.6.0",
     "codemirror": "~5.39.0",
-    "d3": "~3.5.17",
+    "d3": "^4.12.0",
+    "d3-zoom": "^1.7.1",
     "viz.js": "^2.0.0",
     "worker-loader": "^2.0.0"
   },
   "description": "A JupyterLab extension for viewing graphviz files.",
   "devDependencies": {
-    "@types/d3": "^3",
     "@types/webpack-env": "~1.13.6",
+    "@types/d3": "^4.12.0",
     "prettier": "1.13.7",
     "rimraf": "~2.6.2",
     "tslint": "^5.9.1",
