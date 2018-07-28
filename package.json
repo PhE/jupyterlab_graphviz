@@ -56,7 +56,7 @@
     "url": "https://github.com/PhE/jupyterlab_graphviz.git"
   },
   "scripts": {
-    "bootstrap": "jlpm && jlpm clean && jlpm lint && jlpm build && jlpm lab:link && jlpm lab:build:dev",
+    "bootstrap": "jlpm && jlpm clean && jlpm lint && jlpm build && jlpm lab:link && jlpm lab:build",
     "build": "tsc --project src",
     "clean": "rimraf lib",
     "lab:build": "jupyter lab build",
