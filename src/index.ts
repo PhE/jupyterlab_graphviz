@@ -141,8 +141,6 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
 
     const {width, height} = options as any;
 
-    this.svg.call(this._zoom);
-
     this.svg
       .style(
         'min-width',
@@ -167,6 +165,7 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
 
   onAfterAttach(msg: Message) {
     super.onAfterAttach(msg);
+    this._div.call(this._zoom);
     this.zoomFit();
   }
 
@@ -261,8 +260,9 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
       return;
     }
 
-    console.log(`${d3.event.transform}`);
-    this._div.select('svg g').attr('transform', d3.event.transform);
+    this._div.select('svg')
+      .attr('transform-origin', 'top left')
+      .attr('transform', d3.event.transform);
     //
     // this._zoomSlider.property({value: evt.scale});
   }
