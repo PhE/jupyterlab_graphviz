@@ -1,3 +1,11 @@
 #!/bin/bash
+source activate base
+
 jlpm bootstrap || \
   echo "\n*** some problem occurred, but we're just going to try... ***"
+
+rm -rf \
+  ${CONDA_PREFIX/share/jupyter/lab/staging \
+  ~/.npm \
+  ~/.yarn \
+  ~/.cache/yarn
