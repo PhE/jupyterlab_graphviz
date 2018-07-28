@@ -110,7 +110,7 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
 
     if (model != null && !model.data['image/svg+xml']) {
       model.setData({
-        data: {...model.data, 'image/svg+xml': `image/svg+xml;utf8,${svg}`},
+        data: {...model.data, 'image/svg+xml': svg},
       });
     }
   }
