@@ -2,15 +2,10 @@
 export const TYPES: {
   [key: string]: {name: string; extensions: string[]; engine: any};
 } = {
-  'application/vnd.graphviz': {
+  'text/vnd.graphviz': {
     name: 'dot',
-    extensions: ['.gv', '.dot'],
+    extensions: ['.gv', '.dot', '.neato'],
     engine: 'dot',
-  },
-  'application/vnd.graphviz.neato': {
-    name: 'neato',
-    extensions: ['.neato'],
-    engine: 'neato',
   },
 };
 

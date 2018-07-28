@@ -1,6 +1,11 @@
 #!/bin/bash
-set -ex
-jlpm
-jlpm build
-jupyter labextension link .
-jupyter labextension list
+source activate base
+
+jlpm bootstrap || \
+  echo "\n*** some problem occurred, but we're just going to try... ***"
+
+rm -rf \
+  /srv/conda/share/jupyter/lab/staging \
+  ~/.npm \
+  ~/.yarn \
+  ~/.cache/yarn

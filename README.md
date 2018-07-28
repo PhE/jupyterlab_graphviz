@@ -12,13 +12,12 @@ and choose **Open with... ▶ dot**.
 The following [DOT language](https://www.graphviz.org/doc/info/lang.html) file
 extensions are supported with live preview and syntax highlighting:
 - `.gv`
-- `.neato`
 - `.dot`
+- `.neato`
 
 ## Inline rendering
-The following MIME types can also be rendered inline in Notebooks and Consoles:
-- `application/vnd.graphviz.neato`
-- `application/vnd.graphviz`
+The following MIME type can also be rendered inline in Notebooks and Consoles:
+- `text/vnd.graphviz`
 
 > Check out some MIME examples in the
 [Cookbook](./samples/Graphviz Rich Display Cookbook.ipynb).
@@ -33,12 +32,12 @@ find text.
 
 ## Installation
 > ### Prerequisites
-* [JupyterLab](https://github.com/jupyterlab/jupyterlab) ≥ 0.32
-* [nodejs](https://nodejs.org/en/) ≥ 6
+* [JupyterLab](https://github.com/jupyterlab/jupyterlab) ≥ 0.33
+* [nodejs](https://nodejs.org/en/) ≥ 6,<10
 
 > For example, via `conda`:
 ```bash
-conda install -c conda-forge jupyterlab nodejs
+conda install -c conda-forge jupyterlab=0.33 nodejs=8
 ```
 
 ```bash
@@ -47,19 +46,26 @@ jupyter labextension install jupyterlab_graphviz
 
 
 ## Development
-### Install dependencies
+
+### Quick start
+Gets you started with a clean, linted, build JupyterLab with the extension
 ```bash
-jlpm
+jlpm bootstrap
 ```
 
-### Build the extension
+#### Install dependencies
+```bash
+jlpm bootstrap
+```
+
+#### Build the extension
 ```bash
 jlpm build
 ```
 
 ### Install into to my JupyterLab
 ```bash
-jupyter labextension link .
+jlpm lab:link
 ```
 
 ### Rebuild once
@@ -67,14 +73,14 @@ To rebuild the package and the JupyterLab app:
 
 ```bash
 jlpm build
-jupyter lab build
+jlpm lab:build
 ```
 
 ### Develop continuously
 ```bash
 jlpm watch
 # and in another terminal
-jupyter lab --watch
+jlpm lab:watch
 ```
 
 ### Check and apply project style
