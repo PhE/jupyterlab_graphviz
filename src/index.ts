@@ -25,6 +25,12 @@ import '../style/index.css';
 
 defineGraphvizMode();
 
+export interface IDrawOptions {
+  width?: string;
+  height?: string;
+  model?: IRenderMime.IMimeModel;
+}
+
 /**
  * A widget for rendering graphviz/dot, for usage with rendermime.
  */
@@ -54,7 +60,7 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
     return d3.select(this.node).select('svg');
   }
 
-  async draw(graphviz: string = null, options = {}) {
+  async draw(graphviz: string = null, options: IDrawOptions = {}) {
     const viz = Private.viz != null ? Private.viz : await Private.ensureViz();
 
     if (!graphviz && !this._lastRaw) {
@@ -88,7 +94,7 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
 
     this._div.html(this.viz);
 
-    const {width, height} = options as any;
+    const {width, height} = options;
 
     this.svg
       .style(
@@ -99,6 +105,14 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
         'min-height',
         height ? `${height}` : this._lastSize ? this._lastSize[1] : null
       );
+
+    const {model} = options;
+
+    if (model != null && !model.data['image/svg+xml']) {
+      model.setData({
+        data: { ...model.data, 'image/svg+xml': `image/svg+xml;utf8,${svg}` }
+      });
+    }
   }
 
   /**
@@ -108,7 +122,7 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
     const data = model.data[this._mimeType] as string;
     const metadata = model.metadata;
 
-    return this.draw(data, metadata);
+    return this.draw(data, {model, ...metadata});
   }
 
   onAfterAttach(msg: Message) {
