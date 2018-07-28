@@ -12,7 +12,8 @@ import {Widget} from '@phosphor/widgets';
 
 import {Message} from '@phosphor/messaging';
 
-import * as d3 from 'd3';
+import * as d3 from 'd3-selection';
+import * as d3Zoom from 'd3-zoom';
 
 import * as VizModuleType from 'viz.js';
 import * as VizWrapModuleType from './viz-wrap';
@@ -40,7 +41,7 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
 
     this._div = root.append('div').classed(C.GRAPHVIZ_GRAPH_CLASS, true);
 
-    this._zoom = d3.zoom().on('zoom', () => this.onZoom());
+    this._zoom = d3Zoom.zoom().on('zoom', () => this.onZoom());
 
     this._div.call(this._zoom);
   }
@@ -120,7 +121,10 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
   }
 
   onZoom() {
-    const evt = (this._lastZoom = d3.event as d3.D3ZoomEvent<SVGElement, any>);
+    const evt = (this._lastZoom = d3.event as d3Zoom.D3ZoomEvent<
+      SVGElement,
+      any
+    >);
     const tx = evt && evt.transform;
 
     if (tx == null || isNaN(tx.x) || isNaN(tx.y) || isNaN(tx.k)) {
@@ -137,11 +141,11 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
   private _div: d3.Selection<any, any, any, any>;
   private _mimeType: string;
   private _engine: any;
-  private _zoom: d3.ZoomBehavior<any, any>;
+  private _zoom: d3Zoom.ZoomBehavior<any, any>;
   private _lastRender = '';
   private _lastRaw = '';
   private _lastSize: [number, number];
-  private _lastZoom: d3.D3ZoomEvent<any, any>;
+  private _lastZoom: d3Zoom.D3ZoomEvent<any, any>;
 }
 
 /**

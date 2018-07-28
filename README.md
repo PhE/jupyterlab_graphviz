@@ -32,12 +32,12 @@ find text.
 
 ## Installation
 > ### Prerequisites
-* [JupyterLab](https://github.com/jupyterlab/jupyterlab) ≥ 0.32
-* [nodejs](https://nodejs.org/en/) ≥ 6
+* [JupyterLab](https://github.com/jupyterlab/jupyterlab) ≥ 0.33
+* [nodejs](https://nodejs.org/en/) ≥ 6,<10
 
 > For example, via `conda`:
 ```bash
-conda install -c conda-forge jupyterlab nodejs
+conda install -c conda-forge jupyterlab=0.33 nodejs=8
 ```
 
 ```bash
@@ -46,19 +46,26 @@ jupyter labextension install jupyterlab_graphviz
 
 
 ## Development
-### Install dependencies
+
+### Quick start
+Gets you started with a clean, linted, build JupyterLab with the extension
 ```bash
-jlpm
+jlpm bootstrap
 ```
 
-### Build the extension
+#### Install dependencies
+```bash
+jlpm bootstrap
+```
+
+#### Build the extension
 ```bash
 jlpm build
 ```
 
 ### Install into to my JupyterLab
 ```bash
-jupyter labextension link .
+jlpm lab:link
 ```
 
 ### Rebuild once
@@ -66,14 +73,14 @@ To rebuild the package and the JupyterLab app:
 
 ```bash
 jlpm build
-jupyter lab build
+jlpm lab:build
 ```
 
 ### Develop continuously
 ```bash
 jlpm watch
 # and in another terminal
-jupyter lab --watch
+jlpm lab:watch
 ```
 
 ### Check and apply project style
