@@ -246,7 +246,12 @@ export class RenderedGraphviz extends Widget implements IRenderMime.IRenderer {
   onZoom() {
     const evt = (this._lastZoom = d3.event as d3.ZoomEvent);
 
-    if (evt == null || isNaN(evt.translate[0]) || isNaN(evt.translate[1]) || !evt.scale) {
+    if (
+      evt == null ||
+      isNaN(evt.translate[0]) ||
+      isNaN(evt.translate[1]) ||
+      !evt.scale
+    ) {
       return;
     }
 
